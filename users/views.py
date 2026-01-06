@@ -1,7 +1,7 @@
 from django.http import HttpRequest, HttpResponse
 
 
-def login_view(request: HttpRequest) -> HttpResponse:
+def login_view(request: HttpRequest, pk: int) -> HttpResponse:
     print(request.path)
     print(request.method)
 
@@ -61,4 +61,4 @@ def calculators_view(request: HttpRequest) -> HttpResponse:
         case _:
             result = 'operator not found.'
     
-    return HttpResponse(f'result: {result}') # 'result: 3+7=10
+    return HttpResponse(f'<h1>result: {result}<h1>') # 'result: 3+7=10
