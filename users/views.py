@@ -1,64 +1,37 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest
+from django.shortcuts import render
 
 
-def login_view(request: HttpRequest, pk: int) -> HttpResponse:
-    print(request.path)
-    print(request.method)
-
-    if request.method == 'GET':
-        pass
-
-    return HttpResponse('login page')
-
-
-def orders_view(request: HttpRequest) -> HttpResponse:
+def calculators_view(request: HttpRequest):
     query_params = request.GET
+    result = None
+    error = None
 
-    min_value = query_params.get('min')
-    max_value = query_params.get('max')
-    
-    return HttpResponse(f'orders page: [{min_value}, {max_value}]')
+    if query_params:
+        num1_raw = query_params.get("num1")
+        num2_raw = query_params.get("num2")
+        op = query_params.get("op")
 
+        if not num1_raw or not num2_raw:
+            error = "Iltimos, barcha sonlarni kiriting."
+        elif op not in ["add", "sub", "mul", "div"]:
+            error = "Noto'g'ri operator."
+        else:
+            try:
+                n1 = float(num1_raw)
+                n2 = float(num2_raw)
+                if op == "add":
+                    result = n1 + n2
+                elif op == "sub":
+                    result = n1 - n2
+                elif op == "mul":
+                    result = n1 * n2
+                elif op == "div":
+                    if n2 == 0:
+                        error = "Nolga bo'lish mumkin emas!"
+                    else:
+                        result = round(n1 / n2, 2)
+            except ValueError:
+                error = "Faqat son kiriting!"
 
-def calculators_view(request: HttpRequest) -> HttpResponse:
-
-    # ?num1=3&num2=7&op=+
-    query_params = request.GET
-
-    # validation
-    if query_params.get('num1') is None:
-        return HttpResponse('num1 is required.')
-    if query_params.get('num2') is None:
-        return HttpResponse('num2 is required.')
-    if query_params.get('op') not in ['add', 'mul', 'sub', 'div']:
-        return HttpResponse("op should be ('add', 'mul', 'sub', 'div').")
-
-    # calculate
-    num1 = int(query_params.get('num1'))
-    num2 = int(query_params.get('num2'))
-    op = query_params.get('op')
-    
-    # if op == 'add':
-    #     result = f'{num1}+{num2}={num1 + num2}'
-    # elif op == 'sub':
-    #     result = f'{num1}-{num2}={num1 - num2}'
-    # elif op == 'mul':
-    #     result = f'{num1}*{num2}={num1 * num2}'
-    # elif op == 'div':
-    #     result = f'{num1}/{num2}={num1 / num2}'
-    # else:
-    #     result = 'operator not found.'
-
-    match op:
-        case 'add':
-            result = f'{num1}+{num2}={num1 + num2}'
-        case 'sub':
-            result = f'{num1}-{num2}={num1 - num2}'
-        case 'mul':
-            result = f'{num1}*{num2}={num1 * num2}'
-        case 'div':
-            result = f'{num1}/{num2}={round(num1 / num2, 2)}'
-        case _:
-            result = 'operator not found.'
-    
-    return HttpResponse(f'<h1>result: {result}<h1>') # 'result: 3+7=10
+    return render(request, "calculator.html", {"result": result, "error": error})
