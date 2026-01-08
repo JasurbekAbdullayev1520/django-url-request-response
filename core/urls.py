@@ -16,17 +16,25 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import render
+
+def home_page(r):
+    response = render(request=r, template_name='home.html')
+    return response
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+
     path('users/', include('apps.users.urls')),
     path('products/', include('apps.products.urls')),
     path('blog/', include('apps.blog.urls')),
     path('users/', include('apps.users.urls')),
 
-]
 
-# path parameter  : /users/{}
-# query parameter : /users/?gender=male&age=18
+    path('users/', include('users.urls')),
+    path('', home_page)
+
+]
