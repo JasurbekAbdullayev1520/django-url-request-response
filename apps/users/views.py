@@ -15,3 +15,12 @@ def get_product_by_uuid_view(request: HttpRequest, id: str) -> HttpResponse:
 
 def get_sub_news_by_path_view(request: HttpRequest, path: str) -> HttpResponse:
     return HttpResponse(f'salom, {path}')
+
+def calculators_view(request):
+    a = request.GET.get('a')
+    b = request.GET.get('b')
+
+    if not a or not b:
+        return HttpResponse("a va b kerak")
+
+    return HttpResponse(int(a) + int(b))
